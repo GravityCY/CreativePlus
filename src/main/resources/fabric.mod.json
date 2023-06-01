@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "creative_plus",
+  "version": "${version}",
+  "name": "Creative Plus",
+  "description": "All your creator needs",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.gravityio.creativeplus.CreativePlus"
+    ],
+    "client": [
+      "me.gravityio.creativeplus.client.CreativePlusClient"
+    ]
+  },
+  "mixins": [
+    "creativeplus.mixins.json",
+    "lib.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": ">=${fabric_version}",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  }
+}
