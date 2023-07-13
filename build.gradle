@@ -12,6 +12,7 @@ group = project.maven_group
 
 loom {
 	log4jConfigs.from(file("log4j.xml"))
+	accessWidenerPath = file("src/main/resources/creativeplus.accesswidener")
 }
 
 repositories {

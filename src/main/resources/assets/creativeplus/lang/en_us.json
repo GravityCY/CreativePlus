@@ -1,0 +1,83 @@
+{
+  "label.empty_name": "Enter name...",
+
+  "label.entity.nbt.glowing": "Glowing",
+  "label.entity.nbt.invulnerable": "Invulnerable",
+  "label.entity.nbt.no_gravity": "No Gravity",
+  "label.entity.nbt.silent": "Silent",
+  "label.entity.nbt.custom_name_visible": "Name Visible",
+  "label.entity.nbt.custom_name": "Name",
+
+  "label.living_entity.nbt.health": "Health",
+
+  "label.mob_entity.nbt.can_pickup_loot": "Pickup Loot",
+  "label.mob_entity.nbt.persistence_required": "Persistent",
+  "label.mob_entity.nbt.left_handed":  "Left Handed",
+  "label.mob_entity.nbt.no_ai": "No AI",
+
+  "label.passive.nbt.age": "Age",
+  "label.passive.nbt.forced_age": "Forced Age",
+
+  "label.animal.nbt.in_love": "In Love",
+  "label.animal.nbt.love_cause": "Love Cause",
+
+  "label.armor_stand.nbt.invisible": "Invisible",
+  "label.armor_stand.nbt.small": "Small",
+  "label.armor_stand.nbt.show_arms": "Show Arms",
+  "label.armor_stand.nbt.hide_baseplate": "Hide Baseplate",
+  "label.armor_stand.nbt.marker": "Marker",
+
+  "label.allay.nbt.can_duplicate": "Can Duplicate",
+
+  "tooltip.entity.nbt.glowing": "Whether the Entity should Glow.",
+  "tooltip.entity.nbt.invulnerable": "Whether the Entity should take any damage.",
+  "tooltip.entity.nbt.no_gravity": "Whether the Entity is affected by Gravity.",
+  "tooltip.entity.nbt.silent": "Whether the Entity should make sounds.",
+  "tooltip.entity.nbt.custom_name_visible": "Whether the Entity's Name should be Visible at all times.",
+  "tooltip.entity.nbt.custom_name": "Gives the Entity a Custom Name.",
+
+  "tooltip.living_entity.nbt.health": "The Health Points of the Entity (2 times as its hearts).",
+
+
+  "tooltip.passive.nbt.age": "The Age of the Entity.",
+  "tooltip.passive.nbt.forced_age": "The Forced Age of the Entity.",
+
+  "tooltip.animal.nbt.in_love": "Whether the Entity is in Love.",
+  "tooltip.animal.nbt.love_cause": "The Love Cause of the Entity.",
+
+  "tooltip.mob_entity.nbt.can_pickup_loot": "Whether the Entity should be able to pickup loot.",
+  "tooltip.mob_entity.nbt.persistence_required": "Whether the Entity should not despawn.",
+  "tooltip.mob_entity.left_handed":  "Whether the Entity is left handed (not sure what this is used for).",
+  "tooltip.mob_entity.no_ai": "Whether the Entity should Move, Attack, Pickup. Generally just stops everything AI related.",
+
+  "tooltip.armor_stand.nbt.invisible": "Whether the Armor Stand should be Invisible.",
+  "tooltip.armor_stand.nbt.small": "Whether the Armor Stand should be Small.",
+  "tooltip.armor_stand.nbt.show_arms": "Whether to show the Armor Stands Arms.",
+  "tooltip.armor_stand.nbt.hide_baseplate": "Whether to hide the Armor Stands baseplate.",
+  "tooltip.armor_stand.nbt.marker": "Whether the Armor Stand should be a Marker (Useful for Map-making).",
+
+  "tooltip.allay.nbt.can_duplicate": "Whether the Allay should be able to Duplicate",
+
+  "creativeplus.bind.open_edit_menu": "Open Edit Menu",
+  "creativeplus.bind.open_entity_menu": "Open Entity Menu",
+
+  "message.creativeplus.config.show_invisible": "Showing all Invisible Armor Stands",
+  "message.creativeplus.config.hide_invisible": "Hiding all Invisible Armor Stands",
+
+  "message.creativeplus.screen.edit.failed_to_get_nbt": "Failed to get NBT from Server",
+
+  "message.creativeplus.no_permissions": "§cYou do not have enough permissions on this server!",
+
+  "message.creativeplus.placement.success": "§aSuccessfully Placed '%s§a'.",
+  "message.creativeplus.placement.cancel": "§cCancelled Placement.",
+  "message.creativeplus.placement.command_too_long": "§cCommand is too long! Max command length allowed by the server is 256 characters!",
+
+  "message.creativeplus.movement.locked": "§cLocked §fEntity§c!",
+  "message.creativeplus.movement.face_player": "§cFacing §fEntity§c at you!",
+  "message.creativeplus.movement.place_ground": "§cPlacing §fEntity§c on floor!",
+
+  "message.creativeplus.move.success": "§aSuccessfully moved '%s§a'!",
+  "message.creativeplus.move.cancel": "§cCancelled!",
+  "message.creativeplus.move.on_move": "§7Started moving '%s§7'!",
+  "message.creativeplus.move.on_move_locked": "§7Started moving '%s§7' in nudge mode!"
+}

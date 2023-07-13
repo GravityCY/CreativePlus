@@ -1,0 +1,16 @@
+accessWidener v1 named
+
+
+# Allay Entity
+accessible method net/minecraft/entity/passive/AllayEntity canDuplicate ()Z
+
+# Passive Entity
+accessible field net/minecraft/entity/passive/PassiveEntity forcedAge I
+
+# Animal Entity
+accessible field net/minecraft/entity/passive/AnimalEntity lovingPlayer Ljava/util/UUID;
+
+# Experience Orb
+accessible field net/minecraft/entity/ExperienceOrbEntity health I
+accessible field net/minecraft/entity/ExperienceOrbEntity orbAge I
+accessible field net/minecraft/entity/ExperienceOrbEntity pickingCount I

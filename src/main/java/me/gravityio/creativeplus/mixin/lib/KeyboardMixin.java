@@ -1,6 +1,6 @@
 package me.gravityio.creativeplus.mixin.lib;
 
-import me.gravityio.creativeplus.lib.Events;
+import me.gravityio.creativeplus.lib.CreativeEvents;
 import net.minecraft.client.Keyboard;
 import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +13,7 @@ public class KeyboardMixin {
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     private void onKeyAny(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (Events.ON_KEY_PRESSED.invoker().pressed(window, key, scancode, action, modifiers) == ActionResult.FAIL)
+        if (CreativeEvents.ON_KEY_PRESSED.invoker().onKey(window, key, scancode, action, modifiers) == ActionResult.FAIL)
             ci.cancel();
     }
 }

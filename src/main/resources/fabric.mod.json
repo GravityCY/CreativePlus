@@ -3,9 +3,9 @@
   "id": "creative_plus",
   "version": "${version}",
   "name": "Creative Plus",
-  "description": "All your creator needs",
+  "description": "All your creative needs",
   "authors": [
-    "Me!"
+    "GravityIO!"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -14,13 +14,11 @@
   "license": "CC0-1.0",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "me.gravityio.creativeplus.CreativePlus"
-    ],
     "client": [
-      "me.gravityio.creativeplus.client.CreativePlusClient"
+      "me.gravityio.creativeplus.CreativePlus"
     ]
   },
+  "accessWidener": "creativeplus.accesswidener",
   "mixins": [
     "creativeplus.mixins.json",
     "lib.mixins.json"
