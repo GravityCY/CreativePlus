@@ -15,12 +15,13 @@ import static me.gravityio.creativeplus.lib.EntityNbtHelper.ArmorStand;
  */
 public class ClientArmorStandEntity extends ClientLivingEntity {
 
-    ArmorStandEntity stand;
-    boolean invisible;
-    boolean small;
-    boolean showArms;
-    boolean hideBaseplate;
-    boolean marker;
+    private final ArmorStandEntity transform;
+    private final ArmorStandEntity stand;
+    private boolean invisible;
+    private boolean small;
+    private boolean showArms;
+    private boolean hideBaseplate;
+    private boolean marker;
 
     private static String key(String v) {
         return "armor_stand.nbt." + v;
@@ -35,9 +36,10 @@ public class ClientArmorStandEntity extends ClientLivingEntity {
                 NbtPiece.of(this::getDisabledSlots, this::setDisabledSlots, INT)*/
     );
 
-    public ClientArmorStandEntity(ArmorStandEntity stand, NbtCompound realNbt) {
-        super(stand, realNbt);
+    public ClientArmorStandEntity(ArmorStandEntity stand, ArmorStandEntity transform, NbtCompound realNbt) {
+        super(stand, transform, realNbt);
         this.stand = stand;
+        this.transform = transform;
 
         this.init();
     }
@@ -51,8 +53,8 @@ public class ClientArmorStandEntity extends ClientLivingEntity {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.invisible = super.realNbt.getBoolean(ArmorStand.INVISIBLE);
         this.small = super.realNbt.getBoolean(ArmorStand.SMALL);
@@ -97,24 +99,29 @@ public class ClientArmorStandEntity extends ClientLivingEntity {
         return 0;
     }
 
-    public void setInvisible(boolean invisible) {
-        this.invisible = invisible;
+    public void setInvisible(boolean v) {
+        this.transform.setInvisible(v);
+        this.invisible = v;
     }
 
-    public void setSmall(boolean small) {
-        this.small = small;
+    public void setSmall(boolean v) {
+        this.transform.setSmall(v);
+        this.small = v;
     }
 
-    public void setShowArms(boolean showArms) {
-        this.showArms = showArms;
+    public void setShowArms(boolean v) {
+        this.transform.setShowArms(v);
+        this.showArms = v;
     }
 
-    public void setHideBaseplate(boolean hideBaseplate) {
-        this.hideBaseplate = hideBaseplate;
+    public void setHideBaseplate(boolean v) {
+        this.transform.setHideBasePlate(v);
+        this.hideBaseplate = v;
     }
 
-    public void setMarker(boolean marker) {
-        this.marker = marker;
+    public void setMarker(boolean v) {
+        this.transform.setMarker(v);
+        this.marker = v;
     }
 
     public void setDisabledSlots(int v) {

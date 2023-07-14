@@ -11,6 +11,7 @@ import static me.gravityio.creativeplus.entity.nbt.NbtPiece.Type.INT;
 
 public class ClientExperienceOrb extends ClientEntity {
     private final ExperienceOrbEntity orb;
+    private final ExperienceOrbEntity transform;
     private int health;
     private int age;
     private int value;
@@ -27,9 +28,10 @@ public class ClientExperienceOrb extends ClientEntity {
             NbtPiece.of(this::getCount, this::setCount, INT, key("count"))
     );
 
-    public ClientExperienceOrb(ExperienceOrbEntity orb, NbtCompound realNbt) {
-        super(orb, realNbt);
+    public ClientExperienceOrb(ExperienceOrbEntity orb, ExperienceOrbEntity transform, NbtCompound realNbt) {
+        super(orb, transform, realNbt);
         this.orb = orb;
+        this.transform = transform;
 
         this.init();
     }
@@ -42,8 +44,8 @@ public class ClientExperienceOrb extends ClientEntity {
     }
 
     @Override
-    protected void update() {
-        super.update();
+    protected void updateRealNbt() {
+        super.updateRealNbt();
 
         this.health = realNbt.getInt(ExperienceOrb.HEALTH);
         this.age = realNbt.getInt(ExperienceOrb.AGE);
@@ -78,18 +80,22 @@ public class ClientExperienceOrb extends ClientEntity {
     }
 
     public void setHealth(int health) {
+        this.transform.health = health;
         this.health = health;
     }
 
     public void setAge(int age) {
+        this.transform.orbAge = age;
         this.age = age;
     }
 
     public void setValue(int value) {
+        this.transform.amount = value;
         this.value = value;
     }
 
     public void setCount(int count) {
+        this.transform.pickingCount = count;
         this.count = count;
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
  * @see PassiveEntity#writeCustomDataToNbt
  */
 public class ClientPassiveEntity extends ClientMobEntity {
+    private final PassiveEntity transform;
     PassiveEntity passive;
     int age;
     int forcedAge;
@@ -25,21 +26,22 @@ public class ClientPassiveEntity extends ClientMobEntity {
         NbtPiece.ofBounded(this::getForcedAge, this::setForcedAge, NbtPiece.Type.INT, key("forced_age"), -24000, 24000)
     );
 
-    public ClientPassiveEntity(PassiveEntity passive, NbtCompound realNbt) {
-        super(passive, realNbt);
+    public ClientPassiveEntity(PassiveEntity passive, PassiveEntity transform, NbtCompound realNbt) {
+        super(passive, transform, realNbt);
         this.passive = passive;
+        this.transform = transform;
 
         this.init();
     }
 
     private void init() {
-        this.age = this.passive.age;
+        this.age = this.passive.getBreedingAge();
         this.forcedAge = this.passive.forcedAge;
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.age = super.realNbt.getInt(Passive.AGE);
         this.forcedAge = super.realNbt.getInt(Passive.FORCED_AGE);
@@ -62,9 +64,11 @@ public class ClientPassiveEntity extends ClientMobEntity {
     }
 
     public void setAge(int age) {
+        this.transform.setBreedingAge(age);
         this.age = age;
     }
     public void setForcedAge(int forcedAge) {
+        this.transform.forcedAge = forcedAge;
         this.forcedAge = forcedAge;
     }
 

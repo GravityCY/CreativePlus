@@ -11,6 +11,7 @@ import java.util.List;
 public class ClientMobEntity extends ClientLivingEntity {
 
     private final MobEntity mob;
+    private final MobEntity transform;
     boolean pickupLoot;
     boolean persistent;
     boolean leftHanded;
@@ -27,9 +28,10 @@ public class ClientMobEntity extends ClientLivingEntity {
             NbtPiece.of(this::isNoAI, this::setNoAI, NbtPiece.Type.BOOLEAN, key("no_ai"))
     );
 
-    public ClientMobEntity(MobEntity mob, NbtCompound realNbt) {
-        super(mob, realNbt);
+    public ClientMobEntity(MobEntity mob, MobEntity transform, NbtCompound realNbt) {
+        super(mob, transform, realNbt);
         this.mob = mob;
+        this.transform = transform;
 
         this.init();
     }
@@ -42,8 +44,8 @@ public class ClientMobEntity extends ClientLivingEntity {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.pickupLoot = super.realNbt.getBoolean(EntityNbtHelper.Mob.CAN_PICKUP_LOOT);
         this.persistent = super.realNbt.getBoolean(EntityNbtHelper.Mob.PERSISTENCE_REQUIRED);
@@ -65,32 +67,36 @@ public class ClientMobEntity extends ClientLivingEntity {
         return pickupLoot;
     }
 
-    public void setPickupLoot(boolean pickupLoot) {
-        this.pickupLoot = pickupLoot;
+    public void setPickupLoot(boolean v) {
+        this.transform.setCanPickUpLoot(v);
+        this.pickupLoot = v;
     }
 
     public boolean isPersistent() {
         return persistent;
     }
 
-    public void setPersistent(boolean persistent) {
-        this.persistent = persistent;
+    public void setPersistent(boolean v) {
+        this.transform.persistent = v;
+        this.persistent = v;
     }
 
     public boolean isLeftHanded() {
         return leftHanded;
     }
 
-    public void setLeftHanded(boolean leftHanded) {
-        this.leftHanded = leftHanded;
+    public void setLeftHanded(boolean v) {
+        this.transform.setLeftHanded(v);
+        this.leftHanded = v;
     }
 
     public boolean isNoAI() {
         return noAI;
     }
 
-    public void setNoAI(boolean noAI) {
-        this.noAI = noAI;
+    public void setNoAI(boolean v) {
+        this.transform.setAiDisabled(v);
+        this.noAI = v;
     }
 
     @Override

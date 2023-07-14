@@ -56,7 +56,6 @@ public class CreativePlus implements ClientModInitializer {
         ClientInputListenerRegistry.add("move_entity", new ClientMoveEntityHandler(CLIENT));
     }
 
-
     private void registerCommands() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(PlusCommand.build()));
     }

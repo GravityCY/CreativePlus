@@ -46,7 +46,7 @@ public class EntityScreen<T extends Entity> extends BaseUIModelScreen<FlowLayout
         ClientInputListenerRegistry.add(this, this.handler);
 
         this.handler.onPlace(() -> {
-            this.handler.discard();
+            this.handler.discardNull();
             CURRENT = null;
             this.client.player.sendMessage(Text.translatable("message.creativeplus.placement.success", TextHelper.getLimit(this.screenEntity.getName(), 20)), true);
             ClientInputListenerRegistry.remove(this);
@@ -57,7 +57,7 @@ public class EntityScreen<T extends Entity> extends BaseUIModelScreen<FlowLayout
             }
         });
         this.handler.onCancel(() -> {
-            this.handler.discard();
+            this.handler.discardNull();
             CURRENT = null;
             this.client.player.sendMessage(CANCEL_MESSAGE, true);
             ClientInputListenerRegistry.remove(this);

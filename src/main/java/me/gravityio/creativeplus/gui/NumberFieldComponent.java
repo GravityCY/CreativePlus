@@ -34,6 +34,10 @@ public class NumberFieldComponent<T extends Number> extends TextBoxComponent {
         this.converter.min = min;
     }
 
+    public void value(T value) {
+        super.setText(String.valueOf(value));
+    }
+
     public EventSource<OnChanged<T>> onNumberChanged() {
         return this.changedEvents.source();
     }

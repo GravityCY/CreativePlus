@@ -13,6 +13,7 @@ import java.util.List;
 public class ClientIronGolemEntity extends ClientMobEntity {
 
     private final IronGolemEntity ironGolem;
+    private final IronGolemEntity transform;
     boolean playerCreated;
 
     private String key(String v) {
@@ -23,9 +24,10 @@ public class ClientIronGolemEntity extends ClientMobEntity {
             NbtPiece.of(this::isPlayerCreated, this::setPlayerCreated, NbtPiece.Type.BOOLEAN, key("player_created"))
     );
 
-    public ClientIronGolemEntity(IronGolemEntity ironGolem, NbtCompound realNbt) {
-        super(ironGolem, realNbt);
+    public ClientIronGolemEntity(IronGolemEntity ironGolem, IronGolemEntity transform, NbtCompound realNbt) {
+        super(ironGolem, transform, realNbt);
         this.ironGolem = ironGolem;
+        this.transform = transform;
 
         this.init();
     }
@@ -35,8 +37,8 @@ public class ClientIronGolemEntity extends ClientMobEntity {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.playerCreated = super.realNbt.getBoolean(IronGolem.PLAYER_CREATED);
     }
@@ -53,6 +55,7 @@ public class ClientIronGolemEntity extends ClientMobEntity {
     }
 
     public void setPlayerCreated(boolean v) {
+        this.transform.setPlayerCreated(v);
         this.playerCreated = v;
     }
 

@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -34,22 +33,50 @@ import java.util.concurrent.CompletableFuture;
 public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
     private final Entity entity;
-    private final CompletableFuture<NbtCompound> realNbt;
     private final ClientEntity clientEntity;
+    private final Entity screenEntity;
     private final Map<NbtPiece<?>, Component> elements = new HashMap<>();
 
     public EditEntityScreen(Entity entity) {
         super(FlowLayout.class, DataSource.file("ui/edit_entity.xml"));
         this.entity = entity;
-        this.realNbt = ClientServerCommunication.getEntityNbt(this.entity.getUuid(), false);
-        this.clientEntity = ClientEntity.create(entity, null);
+        this.screenEntity = this.entity.getType().create(this.entity.world);
+        this.screenEntity.readNbt(this.entity.writeNbt(new NbtCompound()));
+        this.screenEntity.setBodyYaw(0);
+        this.screenEntity.setYaw(0);
+        this.clientEntity = ClientEntity.create(this.entity, this.screenEntity, null);
+
+        ClientServerCommunication.getEntityNbt(this.entity.getUuid(), false, v -> {
+
+            if (v == null) {
+                this.client.player.sendMessage(Text.translatable("message.creativeplus.screen.edit.failed_to_get_nbt"), true);
+                super.close();
+                return;
+            }
+
+            this.clientEntity.setRealNbt(v);
+            this.update();
+        });
     }
 
     @Override
-    protected void build(FlowLayout rootComponent) {
-        var applyButton = rootComponent.childById(ButtonComponent.class, "apply");
+    protected void build(FlowLayout root) {
+        var entityRoot = root.childById(FlowLayout.class, "entity");
+
+        var applyButton = root.childById(ButtonComponent.class, "apply");
         applyButton.onPress((v) -> this.onApply());
-        createNbt(rootComponent);
+        createNbt(root);
+
+        var entityComp = Components.entity(Sizing.fill(50), this.screenEntity);
+        entityComp.transform(s -> {
+            entityComp.showNametag(entityComp.entity().isCustomNameVisible());
+        });
+        entityComp.sizing(Sizing.fill(80), Sizing.fill(55));
+        entityComp.entity().setGlowing(true);
+        entityComp.showNametag(this.screenEntity.isCustomNameVisible());
+        entityComp.allowMouseRotation(true);
+        entityComp.scaleToFit(true);
+        entityRoot.child(entityComp);
     }
 
     /**
@@ -85,16 +112,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
      * that will be sent back to the server to modify the entity
      */
     private void createNbt(FlowLayout root) {
-        this.realNbt.thenAccept(v -> {
-            if (v == null) {
-                this.client.player.sendMessage(Text.translatable("message.creativeplus.screen.edit.failed_to_get_nbt"), true);
-                super.close();
-                return;
-            }
-            this.clientEntity.setRealNbt(v);
-            this.update();
-        });
-
         this.create(root);
     }
 
@@ -102,7 +119,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
      * Creates all the UI elements, sets their default values and their callbacks for when they are modified
      */
     private void create(FlowLayout root) {
-        var entityRoot = root.childById(FlowLayout.class, "entity");
         var inputFlow = root.childById(FlowLayout.class, "input_data");
         var checkboxRoot = root.childById(FlowLayout.class, "checkbox_data");
         var section = getCheckboxSection("Entity");
@@ -117,7 +133,7 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
             if (type == NbtPiece.Type.BOOLEAN) {
                 var boolPiece = (NbtPiece<Boolean>) nbtPiece;
                 var checkbox = getCheckbox(boolPiece.getName(), boolPiece.get());
-                checkbox.checkbox.onChanged(v -> setIfNotEqual(v, boolPiece));
+                checkbox.checkbox.onChanged(boolPiece::set);
                 sectionContentRoot.child(checkbox.root);
                 comp = checkbox.checkbox;
 
@@ -203,10 +219,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
             elements.put(nbtPiece, comp);
         }
 
-        var entityComp = Components.entity(Sizing.fill(50), entity.getType(), null);
-        entityComp.sizing(Sizing.fill(80), Sizing.fill(55));
-        entityComp.scaleToFit(true);
-        entityRoot.child(entityComp);
         checkboxRoot.child(sectionRoot);
     }
 
@@ -214,6 +226,7 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
      * Update's all the UI elements with the server provided NBT of the entity
      */
     private void update() {
+
         for (NbtPiece<?> nbtPiece : this.clientEntity.getNbt()) {
             NbtPiece.Type type = nbtPiece.getType();
             Component comp = this.elements.get(nbtPiece);
@@ -231,7 +244,9 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                     slider.min(intPiece.getMin());
                     slider.max(intPiece.getMax());
                 } else {
-
+                    var intPiece = (NbtPiece<Integer>) nbtPiece;
+                    var numberField = (NumberFieldComponent<Integer>) comp;
+                    numberField.value(intPiece.get());
                 }
 
             } else if (type == NbtPiece.Type.FLOAT) {
@@ -241,6 +256,10 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                     slider.setFromDiscreteValue(floatPiece.get());
                     slider.min(floatPiece.getMin());
                     slider.max(floatPiece.getMax());
+                } else {
+                    var floatPiece = (NbtPiece<Float>) nbtPiece;
+                    var numberField = (NumberFieldComponent<Float>) comp;
+                    numberField.value(floatPiece.get());
                 }
 
             } else if (type == NbtPiece.Type.DOUBLE) {
@@ -250,6 +269,10 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                     slider.setFromDiscreteValue(doublePiece.get());
                     slider.min(doublePiece.getMin());
                     slider.max(doublePiece.getMax());
+                } else {
+                    var doublePiece = (NbtPiece<Double>) nbtPiece;
+                    var numberField = (NumberFieldComponent<Double>) comp;
+                    numberField.value(doublePiece.get());
                 }
 
             } else if (type == NbtPiece.Type.LONG) {
@@ -259,6 +282,10 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                     slider.setFromDiscreteValue(longPiece.get());
                     slider.min(longPiece.getMin());
                     slider.max(longPiece.getMax());
+                } else {
+                    var longPiece = (NbtPiece<Long>) nbtPiece;
+                    var numberField = (NumberFieldComponent<Long>) comp;
+                    numberField.value(longPiece.get());
                 }
 
             } else if (type == NbtPiece.Type.STRING) {

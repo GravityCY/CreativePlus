@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -35,8 +34,8 @@ public class ClientServerCommunication {
         var command = queue.peekFirst();
         if (command == null) return true;
         CreativePlus.LOGGER.debug("[ClientServerCommunication] Received Response: %s".formatted(text.getString()));
-        if (command.future != null) {
-            command.future.complete(text.getString());
+        if (command.callback != null) {
+            command.callback.onResponse(text.getString());
         }
         queue.removeFirst();
         return command.doPrint;
@@ -48,17 +47,14 @@ public class ClientServerCommunication {
         CreativePlus.LOGGER.debug("[ClientServerCommunication] Sending Command: %s".formatted(cmd));
     }
 
-    public static <T> CompletableFuture<T> sendCommand(String cmd, Function<String, T> converter, boolean doPrint) {
-        CompletableFuture<String> cmdFuture = new CompletableFuture<>();
-        CompletableFuture<T> future = new CompletableFuture<>();
-        cmdFuture.thenAccept(s -> future.complete(converter.apply(s)));
-        queue.add(new CommandResponse(doPrint, cmdFuture));
+    public static <T> void sendCommand(String cmd, boolean doPrint, Function<String, T> converter, OnCommandResponse<T> onCommandResponse) {
+        OnCommandResponse<String> res = s -> onCommandResponse.onResponse(converter.apply(s));
+        queue.add(new CommandResponse(doPrint, res));
         client.getNetworkHandler().sendCommand(cmd);
-        return future;
     }
 
-    public static CompletableFuture<NbtCompound> getEntityNbt(UUID entity, boolean doPrint) {
-        return sendCommand("data get entity " + entity.toString(), s -> {
+    public static void getEntityNbt(UUID entity, boolean doPrint, OnCommandResponse<NbtCompound> onCommandResponse) {
+        sendCommand("data get entity " + entity.toString(), doPrint, s -> {
             int i = s.lastIndexOf("data: {");
             if (i == -1) return null;
             String compound = s.substring(i + 6);
@@ -67,10 +63,14 @@ public class ClientServerCommunication {
             } catch (CommandSyntaxException e) {
                 throw new RuntimeException(e);
             }
-        }, doPrint);
+        }, onCommandResponse);
     }
 
-    record CommandResponse(boolean doPrint, @Nullable CompletableFuture<String> future) {
+    public interface OnCommandResponse<T> {
+        void onResponse(T t);
+    }
+
+    record CommandResponse(boolean doPrint, @Nullable OnCommandResponse<String> callback) {
 
         CommandResponse(boolean doPrint) {
             this(doPrint, null);

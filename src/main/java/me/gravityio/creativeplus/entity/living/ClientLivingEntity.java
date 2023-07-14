@@ -13,6 +13,7 @@ import static me.gravityio.creativeplus.lib.EntityNbtHelper.*;
 
 public class ClientLivingEntity extends ClientEntity {
     final LivingEntity living;
+    private final LivingEntity transform;
 
     float health;
     short hurtTime;
@@ -22,9 +23,10 @@ public class ClientLivingEntity extends ClientEntity {
 
     final MutableNbtBoundedPiece<Float> healthPiece = NbtPiece.ofBoundedMutable(this::getHealth, this::setHealth, NbtPiece.Type.FLOAT, "living_entity.nbt.health", 0, 20);
     final List<NbtPiece<?>> pieces = List.of(healthPiece);
-    public ClientLivingEntity(LivingEntity living, NbtCompound realNbt) {
-        super(living, realNbt);
+    public ClientLivingEntity(LivingEntity living, LivingEntity transform, NbtCompound realNbt) {
+        super(living, transform, realNbt);
         this.living = living;
+        this.transform = transform;
 
         this.init();
     }
@@ -36,8 +38,8 @@ public class ClientLivingEntity extends ClientEntity {
 
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.health = super.realNbt.getFloat(Living.HEALTH);
     }
@@ -50,6 +52,7 @@ public class ClientLivingEntity extends ClientEntity {
     }
 
     public void setHealth(float health) {
+        this.transform.setHealth(health);
         this.health = health;
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class ClientAllayEntity extends ClientMobEntity {
     private final AllayEntity allay;
+    private final AllayEntity transform;
 
     private boolean canDuplicate;
 
@@ -23,9 +24,10 @@ public class ClientAllayEntity extends ClientMobEntity {
             NbtPiece.of(this::canDuplicate, this::setCanDuplicate, NbtPiece.Type.BOOLEAN, key("can_duplicate"))
     );
 
-    public ClientAllayEntity(AllayEntity allay, NbtCompound realNbt) {
-        super(allay, realNbt);
+    public ClientAllayEntity(AllayEntity allay, AllayEntity transform, NbtCompound realNbt) {
+        super(allay, transform, realNbt);
         this.allay = allay;
+        this.transform = transform;
 
         this.init();
     }
@@ -35,8 +37,8 @@ public class ClientAllayEntity extends ClientMobEntity {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateRealNbt() {
+        super.updateRealNbt();
 
         this.canDuplicate = super.realNbt.getBoolean(EntityNbtHelper.Allay.CAN_DUPLICATE);
     }
@@ -53,6 +55,7 @@ public class ClientAllayEntity extends ClientMobEntity {
     }
 
     public void setCanDuplicate(boolean canDuplicate) {
+        this.allay.getDataTracker().set(AllayEntity.CAN_DUPLICATE, canDuplicate);
         this.canDuplicate = canDuplicate;
     }
 
