@@ -1,7 +1,7 @@
 # CreativePlus
 A Mod that makes it easier to be creative in Minecraft, at the 
 moment the features are revolving around entity ease of use, 
-regarding placement, NBT and an in game JSON Text generator
+regarding placement, NBT and an in game JSON Text generator *ᵀᴼᴰᴼ*
 
 ## Overview 🌍
 - **Robust Entity Manipulation!**
