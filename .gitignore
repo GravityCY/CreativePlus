@@ -30,5 +30,5 @@ bin/
 
 # fabric
 
-run/*
-!run/client/ui/*
+run/*/*
+!run/client/ui/
