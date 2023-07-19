@@ -34,6 +34,10 @@ public class ButtonList extends ButtonComponent {
         this.onChanged = onChanged;
     }
 
+    public Text current() {
+        return list.get(index);
+    }
+
     public void next() {
         index++;
         index %= list.size();

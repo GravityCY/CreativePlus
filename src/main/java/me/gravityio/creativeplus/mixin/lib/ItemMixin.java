@@ -1,6 +1,6 @@
 package me.gravityio.creativeplus.mixin.lib;
 
-import me.gravityio.creativeplus.lib.CreativeEvents;
+import me.gravityio.creativeplus.lib.idk.CreativeEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

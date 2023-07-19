@@ -4,10 +4,15 @@ import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.core.Sizing;
+import me.gravityio.creativeplus.CreativePlus;
+import me.gravityio.creativeplus.api.placement.ClientEntitySummonHandler;
+import me.gravityio.creativeplus.entity.client.ClientEntity;
 import me.gravityio.creativeplus.gui.EntityComponentButton;
-import me.gravityio.creativeplus.lib.Helper;
+import me.gravityio.creativeplus.lib.helper.Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 
 import java.util.List;
 
@@ -16,7 +21,6 @@ import java.util.List;
  */
 // TODO: Needs designing and planning
 public class EntityMenuScreen extends BaseUIModelScreen<FlowLayout> {
-
     public EntityMenuScreen() {
 //        super(FlowLayout.class, DataSource.asset(new Identifier(CreativePlus.MOD_ID, "entity_menu")));
         super(FlowLayout.class, DataSource.file("ui/entity_menu.xml"));
@@ -37,13 +41,7 @@ public class EntityMenuScreen extends BaseUIModelScreen<FlowLayout> {
         List<EntityType<?>> types = Helper.getOrderedEntities(this.client);
         for (EntityType<?> type : types) {
             if (row * maxColumns + column >= 200) break;
-            EntityComponentButton<? extends Entity> entityButton = new EntityComponentButton<>(Sizing.fixed(40), type, null);
-            entityButton.scaleToFit(true);
-            entityButton.onPress(a -> {
-                EntityScreen.clean();
-                this.client.setScreen(EntityScreen.open(this.client, type));
-            });
-            entities.child(entityButton, row, column);
+            entities.child(createEntity(type), row, column);
             if (column == maxColumns - 1) {
                 row++;
                 column = 0;
@@ -53,10 +51,27 @@ public class EntityMenuScreen extends BaseUIModelScreen<FlowLayout> {
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-        if (EntityScreen.CURRENT != null)
-            EntityScreen.CURRENT.getHandler().setDelay(100);
+    private EntityComponentButton<?> createEntity(EntityType<?> type) {
+        EntityComponentButton<? extends Entity> entityButton = new EntityComponentButton<>(Sizing.fixed(40), type, null);
+        entityButton.scaleToFit(true);
+        entityButton.onPress(this::onClickEntity);
+        return entityButton;
+    }
+
+    private void onClickEntity(EntityComponentButton<? extends Entity> entityComponentButton) {
+        Entity screenEntity = entityComponentButton.entity().getType().create(this.client.world);
+        ClientEntity clientEntity = ClientEntity.create(screenEntity, screenEntity, new NbtCompound());
+        EditEntityScreen editEntityScreen = new EditEntityScreen(clientEntity);
+        editEntityScreen.setFinishButtonText(Text.translatable("button.creativeplus.create_entity"));
+        editEntityScreen.onFinish((data) -> {
+            var summonHandler = new ClientEntitySummonHandler(this.client);
+            CreativePlus.setCurrentHandler(summonHandler);
+            summonHandler.onFinish(CreativePlus::unsetCurrentHandler);
+            summonHandler.setupEntity(screenEntity.getType(), clientEntity.getOutput());
+            summonHandler.setMode(data.mode());
+            summonHandler.start();
+            editEntityScreen.close();
+        });
+        this.client.setScreen(editEntityScreen);
     }
 }

@@ -1,6 +1,6 @@
 package me.gravityio.creativeplus.mixin.lib;
 
-import me.gravityio.creativeplus.lib.CreativeEvents;
+import me.gravityio.creativeplus.lib.idk.CreativeEvents;
 import net.minecraft.client.Keyboard;
 import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Mixin;

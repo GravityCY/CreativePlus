@@ -4,9 +4,11 @@ import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.util.EventSource;
 import io.wispforest.owo.util.EventStream;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 
+// TODO: Decide what to do when the number in the text field is null, and
+//  whether to keep passing null to the events or 0 etc.
 /**
  * A Text Field but only allows for a certain number type, Whole or Decimal.
  */
@@ -25,12 +27,14 @@ public class NumberFieldComponent<T extends Number> extends TextBoxComponent {
         });
     }
 
-    public void max(T max) {
-        this.converter.max = max;
-        super.setMaxLength(max.toString().length() + 1);
+    public void max(@Nullable T max) {
+        this.converter.setMax(max);
+        if (max != null) {
+            super.setMaxLength(max.toString().length() + 1);
+        }
     }
 
-    public void min(T min) {
+    public void min(@Nullable T min) {
         this.converter.min = min;
     }
 
@@ -38,12 +42,17 @@ public class NumberFieldComponent<T extends Number> extends TextBoxComponent {
         super.setText(String.valueOf(value));
     }
 
+    /**
+     * The Number returned is {@link Nullable @Nullable}, so make sure to check for that<br>
+     * Because the text field can be empty which would be a null Number.
+     * @return
+     */
     public EventSource<OnChanged<T>> onNumberChanged() {
         return this.changedEvents.source();
     }
 
     public interface OnChanged<T> {
-        void onChanged(T type);
+        void onChanged(@Nullable T type);
         static <T extends Number> EventStream<OnChanged<T>> newStream() {
             return new EventStream<>(subscribers -> value -> {
                 for (var subscriber : subscribers) {
@@ -108,17 +117,17 @@ public class NumberFieldComponent<T extends Number> extends TextBoxComponent {
     }
 
     public abstract static class NumberConverter<T extends Number> {
-        T max;
-        T min;
+        @Nullable T max;
+        @Nullable T min;
 
         abstract T convert(String s);
         boolean pass(String s) {
             return s.equals("") || s.equals("-");
         }
-        void setMax(T max) {
+        void setMax(@Nullable T max) {
             this.max = max;
         }
-        void setMin(T min) {
+        void setMin(@Nullable T min) {
             this.min = min;
         }
     }

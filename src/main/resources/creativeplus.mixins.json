@@ -4,11 +4,14 @@
   "package": "me.gravityio.creativeplus.mixin.mod",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "EntityPushMixin"
   ],
   "client": [
     "ArmorStandHitbox",
-    "OverrideInvisibleArmorStand"
+    "EntityPushMixin",
+    "OverrideGlowingRendering",
+    "OverrideInvisibleArmorStand$HitboxMixin",
+    "OverrideInvisibleArmorStand$VisibilityMixin",
+    "UpdateGlowingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

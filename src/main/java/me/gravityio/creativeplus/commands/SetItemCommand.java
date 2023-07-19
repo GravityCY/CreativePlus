@@ -3,7 +3,7 @@ package me.gravityio.creativeplus.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import me.gravityio.creativeplus.CreativePlus;
-import me.gravityio.creativeplus.lib.Helper;
+import me.gravityio.creativeplus.lib.helper.Helper;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.network.ClientPlayerEntity;

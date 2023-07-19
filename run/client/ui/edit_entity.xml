@@ -80,18 +80,33 @@
                     <gap>5</gap>
                     <sizing>
                         <horizontal method="fill">90</horizontal>
-                        <vertical method="fill">80</vertical>
+                        <vertical method="fill">75</vertical>
                     </sizing>
                 </flow-layout>
 
-                <button id="apply">
-                    <text>Apply</text>
-                </button>
+                <flow-layout direction="horizontal">
+                    <children>
+                        <button id="apply">
+                            <text>Apply</text>
+                        </button>
+
+                        <buttonlist id="mode">
+                            <tooltip-text>Sets the mode</tooltip-text>
+                            <entries>
+                                <text>EXECUTE</text>
+                                <text>COPY</text>
+                            </entries>
+                        </buttonlist>
+                    </children>
+                    <gap>5</gap>
+                    <horizontal-alignment>center</horizontal-alignment>
+                    <vertical-alignment>center</vertical-alignment>
+                </flow-layout>
 
             </children>
             <horizontal-alignment>center</horizontal-alignment>
             <vertical-alignment>center</vertical-alignment>
-            <gap>5</gap>
+            <gap>7</gap>
             <surface>
                 <vanilla-translucent/>
             </surface>

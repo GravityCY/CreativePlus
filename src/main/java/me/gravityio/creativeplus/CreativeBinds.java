@@ -1,19 +1,11 @@
 package me.gravityio.creativeplus;
 
-import me.gravityio.creativeplus.handler.entity.ClientEntityMovementHandler;
-import me.gravityio.creativeplus.handler.entity.ClientEntityPlacementHandler;
-import me.gravityio.creativeplus.lib.Helper;
-import me.gravityio.creativeplus.lib.NbtHelper;
-import me.gravityio.creativeplus.screen.EditEntityScreen;
+import me.gravityio.creativeplus.input.ClientEditInputHandler;
 import me.gravityio.creativeplus.screen.EntityMenuScreen;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
 public class CreativeBinds {
@@ -46,14 +38,7 @@ public class CreativeBinds {
         }
 
         while (OPEN_EDIT_MENU_BIND.wasPressed()) {
-            if (!CLIENT.player.hasPermissionLevel(2)) {
-                CLIENT.player.sendMessage(Text.translatable("message.creativeplus.no_permissions"), true);
-                continue;
-            }
-
-            Entity entity = Helper.getTargetedEntity(EntityPredicates.EXCEPT_SPECTATOR, 20);
-            if (entity == null || ClientEntityMovementHandler.inUse) return;
-            CLIENT.setScreen(new EditEntityScreen(entity));
+            ClientEditInputHandler.onEditKeyPressed(CLIENT);
         }
 
         while (OPEN_ENTITY_MENU_BIND.wasPressed()) {

@@ -18,6 +18,5 @@ regarding placement, NBT and an in game JSON Text generator *ᵀᴼᴰᴼ*
 ### Entity Placement
 https://github.com/GravityCY/CreativePlus/assets/49225419/27df22ce-d338-4f66-8f23-6e1f30e86eaa
 
-
 ### NBT Manipulation
 https://github.com/GravityCY/CreativePlus/assets/49225419/276d3444-8d98-4d00-8f73-42083aa96172

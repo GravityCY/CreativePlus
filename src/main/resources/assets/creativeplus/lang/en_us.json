@@ -1,5 +1,7 @@
 {
-  "label.empty_name": "Enter name...",
+  "button.creativeplus.create_entity": "Create Entity",
+
+  "placeholder.edit_entity.empty_name": "Enter name...",
 
   "label.entity.nbt.glowing": "Glowing",
   "label.entity.nbt.invulnerable": "Invulnerable",
@@ -27,6 +29,19 @@
   "label.armor_stand.nbt.hide_baseplate": "Hide Baseplate",
   "label.armor_stand.nbt.marker": "Marker",
 
+  "label.area_effect_cloud.nbt.age": "Age",
+  "label.area_effect_cloud.nbt.duration": "Duration",
+  "label.area_effect_cloud.nbt.wait_time": "Wait Time",
+  "label.area_effect_cloud.nbt.reapplication_delay": "Reapplication Delay",
+  "label.area_effect_cloud.nbt.duration_on_use": "Duration On Use",
+  "label.area_effect_cloud.nbt.color": "Color",
+  "label.area_effect_cloud.nbt.radius_on_use": "Radius On Use",
+  "label.area_effect_cloud.nbt.radius_per_tick": "Radius Per Tick",
+  "label.area_effect_cloud.nbt.radius": "Radius",
+  "label.area_effect_cloud.nbt.particle": "Particle",
+  "label.area_effect_cloud.nbt.potion": "Potion",
+  "label.area_effect_cloud.nbt.effects": "Effects",
+
   "label.allay.nbt.can_duplicate": "Can Duplicate",
 
   "tooltip.entity.nbt.glowing": "Whether the Entity should Glow.",
@@ -38,7 +53,6 @@
 
   "tooltip.living_entity.nbt.health": "The Health Points of the Entity (2 times as its hearts).",
 
-
   "tooltip.passive.nbt.age": "The Age of the Entity.",
   "tooltip.passive.nbt.forced_age": "The Forced Age of the Entity.",
 
@@ -47,14 +61,27 @@
 
   "tooltip.mob_entity.nbt.can_pickup_loot": "Whether the Entity should be able to pickup loot.",
   "tooltip.mob_entity.nbt.persistence_required": "Whether the Entity should not despawn.",
-  "tooltip.mob_entity.left_handed":  "Whether the Entity is left handed (not sure what this is used for).",
-  "tooltip.mob_entity.no_ai": "Whether the Entity should Move, Attack, Pickup. Generally just stops everything AI related.",
+  "tooltip.mob_entity.nbt.left_handed":  "Whether the Entity is left handed (not sure what this is used for).",
+  "tooltip.mob_entity.nbt.no_ai": "Whether the Entity should Move, Attack, Pickup. Generally just stops everything AI related.",
 
   "tooltip.armor_stand.nbt.invisible": "Whether the Armor Stand should be Invisible.",
   "tooltip.armor_stand.nbt.small": "Whether the Armor Stand should be Small.",
   "tooltip.armor_stand.nbt.show_arms": "Whether to show the Armor Stands Arms.",
   "tooltip.armor_stand.nbt.hide_baseplate": "Whether to hide the Armor Stands baseplate.",
   "tooltip.armor_stand.nbt.marker": "Whether the Armor Stand should be a Marker (Useful for Map-making).",
+
+  "tooltip.area_effect_cloud.nbt.age": "The Age of the Area Effect Cloud.",
+  "tooltip.area_effect_cloud.nbt.duration": "How long the Area Effect Cloud should last.",
+  "tooltip.area_effect_cloud.nbt.wait_time": "How long the Area Effect cloud should wait before starting the effect.",
+  "tooltip.area_effect_cloud.nbt.reapplication_delay": "How often to Re-Apply the Effects of the Area Effect Cloud.",
+  "tooltip.area_effect_cloud.nbt.duration_on_use": "How long to set the duration of the Area Effect Cloud when an Entity enters it.",
+  "tooltip.area_effect_cloud.nbt.color": "The Color of the particles.",
+  "tooltip.area_effect_cloud.nbt.radius_on_use": "How much to increase or decrease the Radius of the Area Effect Cloud when an entity enters it.",
+  "tooltip.area_effect_cloud.nbt.radius_per_tick": "How much to increase or decrease the Radius of the Area Effect Cloud every tick.",
+  "tooltip.area_effect_cloud.nbt.radius": "The Radius of the Area Effect Cloud.",
+  "tooltip.area_effect_cloud.nbt.particle": "The Particle of the Area Effect Cloud.",
+  "tooltip.area_effect_cloud.nbt.potion": "The Potion of the Area Effect Cloud.",
+  "tooltip.area_effect_cloud.nbt.effects": "The Effects of the Area Effect Cloud.",
 
   "tooltip.allay.nbt.can_duplicate": "Whether the Allay should be able to Duplicate",
 
@@ -66,18 +93,29 @@
 
   "message.creativeplus.screen.edit.failed_to_get_nbt": "Failed to get NBT from Server",
 
-  "message.creativeplus.no_permissions": "§cYou do not have enough permissions on this server!",
+  "message.creativeplus.no_permissions_error": "§cYou do not have enough permissions on this server!",
 
-  "message.creativeplus.placement.success": "§aSuccessfully Placed '%s§a'.",
-  "message.creativeplus.placement.cancel": "§cCancelled Placement.",
-  "message.creativeplus.placement.command_too_long": "§cCommand is too long! Max command length allowed by the server is 256 characters!",
+  "message.creativeplus.generic.command_too_long": "§cCommand is too long! Max command length allowed by the server is 256 characters!",
+  "message.creativeplus.generic.copy_command": "§aCopied command to clipboard!",
+
+  "message.creativeplus.edit.success": "§aSuccessfully edited entity!",
+  "message.creativeplus.edit.no_entity": "§cNot looking at an entity!",
+  "message.creativeplus.edit.spawn_clone_error": "§cSomething went wrong when spawning a clone!",
+  "message.creativeplus.edit.nothing_changed": "§cNothing Changed...",
 
   "message.creativeplus.movement.locked": "§cLocked §fEntity§c!",
+  "message.creativeplus.movement.no_custom_handler": "§cEntity does not have a Custom Handler!",
   "message.creativeplus.movement.face_player": "§cFacing §fEntity§c at you!",
   "message.creativeplus.movement.place_ground": "§cPlacing §fEntity§c on floor!",
 
-  "message.creativeplus.move.success": "§aSuccessfully moved '%s§a'!",
-  "message.creativeplus.move.cancel": "§cCancelled!",
-  "message.creativeplus.move.on_move": "§7Started moving '%s§7'!",
-  "message.creativeplus.move.on_move_locked": "§7Started moving '%s§7' in nudge mode!"
+  "message.creativeplus.summon.start_summon": "§aStarted Summoning '%s§a'.",
+  "message.creativeplus.summon.end_summon": "§aSuccessfully Summoned '%s§a'.",
+  "message.creativeplus.summon.cancel_summon": "§cCancelled!",
+  "message.creativeplus.summon.copy_command": "§aCopied summon command to clipboard!",
+
+  "message.creativeplus.teleport.start_move": "§7Started moving '%s§7'!",
+  "message.creativeplus.teleport.start_move_locked": "§7Started moving '%s§7' in nudge mode!",
+  "message.creativeplus.teleport.end_move": "§aSuccessfully moved '%s§a'!",
+  "message.creativeplus.teleport.cancel_move": "§cCancelled!",
+  "message.creativeplus.teleport.copy_command": "§aCopied command to clipboard!"
 }
