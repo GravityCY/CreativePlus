@@ -40,7 +40,8 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand 	"version": project.version,
 				"loader_version": project.property("loader_version"),
-				"fabric_version": project.property("fabric_version")
+				"fabric_version": project.property("fabric_version"),
+				"owo_version": project.property("owo_version")
 	}
 }
 

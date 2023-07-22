@@ -54,9 +54,9 @@ public class ArmorStandHandler extends CustomHandler {
         return new Box(vec.x - x, vec.y - y, vec.z - z, vec.x + x, vec.y + y, vec.z + z);
     }
 
-    public ArmorStandHandler(MinecraftClient client, Entity entity) {
+    public ArmorStandHandler(MinecraftClient client, ArmorStandEntity entity) {
         this.client = client;
-        this.armorStand = (ArmorStandEntity) entity;
+        this.armorStand = entity;
     }
 
     @Override
@@ -229,6 +229,11 @@ public class ArmorStandHandler extends CustomHandler {
 
     @Override
     public boolean isAdditive() {
+        return false;
+    }
+
+    @Override
+    public boolean isMerged() {
         return false;
     }
 

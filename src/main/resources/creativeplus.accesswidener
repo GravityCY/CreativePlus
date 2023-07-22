@@ -6,6 +6,28 @@ accessible method net/minecraft/entity/decoration/ArmorStandEntity setShowArms (
 accessible method net/minecraft/entity/decoration/ArmorStandEntity setHideBasePlate (Z)V
 accessible method net/minecraft/entity/decoration/ArmorStandEntity setMarker (Z)V
 
+# Display Entity
+accessible field net/minecraft/entity/decoration/DisplayEntity SCALE Lnet/minecraft/entity/data/TrackedData;
+accessible field net/minecraft/entity/decoration/DisplayEntity LEFT_ROTATION Lnet/minecraft/entity/data/TrackedData;
+accessible field net/minecraft/entity/decoration/DisplayEntity RIGHT_ROTATION Lnet/minecraft/entity/data/TrackedData;
+accessible method net/minecraft/entity/decoration/DisplayEntity getTransformation (Lnet/minecraft/entity/data/DataTracker;)Lnet/minecraft/util/math/AffineTransformation;
+accessible field net/minecraft/entity/decoration/DisplayEntity startInterpolationOnNextTick Z
+accessible method net/minecraft/entity/decoration/DisplayEntity setBillboardMode (Lnet/minecraft/entity/decoration/DisplayEntity$BillboardMode;)V
+accessible field net/minecraft/entity/decoration/DisplayEntity interpolators Lnet/minecraft/entity/decoration/DisplayEntity$Interpolators;
+accessible method net/minecraft/entity/decoration/DisplayEntity$Interpolators interpolate (FLnet/minecraft/entity/data/DataTracker;)V
+
+# Item Display Entity
+accessible method net/minecraft/entity/decoration/DisplayEntity$ItemDisplayEntity setItemStack (Lnet/minecraft/item/ItemStack;)V
+
+# Text Display Entity
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity getBackground ()I
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity getTextOpacity ()B
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setDisplayFlags (B)V
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setTextOpacity (B)V
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setBackground (I)V
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setText (Lnet/minecraft/text/Text;)V
+accessible method net/minecraft/entity/decoration/DisplayEntity$TextDisplayEntity setLineWidth (I)V
+
 # Allay Entity
 accessible field net/minecraft/entity/passive/AllayEntity CAN_DUPLICATE Lnet/minecraft/entity/data/TrackedData;
 accessible method net/minecraft/entity/passive/AllayEntity canDuplicate ()Z

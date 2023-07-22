@@ -1,4 +1,4 @@
-package me.gravityio.creativeplus.gui;
+package me.gravityio.creativeplus.lib.owo.gui;
 
 /**
  * A Text Field that has a clickable button on the side to open a

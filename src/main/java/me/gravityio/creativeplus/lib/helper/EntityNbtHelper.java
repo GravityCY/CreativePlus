@@ -1,10 +1,10 @@
 package me.gravityio.creativeplus.lib.helper;
 
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.entity.decoration.DisplayEntity;
+import net.minecraft.entity.decoration.DisplayEntity.TextDisplayEntity;
+import net.minecraft.nbt.*;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.EulerAngle;
 
 /**
@@ -182,6 +182,85 @@ public class EntityNbtHelper {
         public static String INVENTORY = "Inventory";
     }
 
+    public static class Display {
+        public static final String BILLBOARD_NBT_KEY = "billboard";
+    }
+
+    public static class TextDisplay {
+        public static final String TEXT = "text";
+        private static final String LINE_WIDTH = "line_width";
+        private static final String TEXT_OPACITY = "text_opacity";
+        private static final String BACKGROUND = "background";
+        private static final String SHADOW = "shadow";
+        private static final String SEE_THROUGH = "see_through";
+        private static final String DEFAULT_BACKGROUND = "default_background";
+        private static final String ALIGNMENT = "alignment";
+
+        public static void putText(NbtCompound nbt, Text text) {
+            nbt.putString(TEXT, Text.Serializer.toJson(text));
+        }
+
+        public static void putLineWidth(NbtCompound nbt, int lineWidth) {
+            nbt.putInt(LINE_WIDTH, lineWidth);
+        }
+
+        public static void putBackground(NbtCompound nbt, int background) {
+            nbt.putInt(BACKGROUND, background);
+        }
+
+        public static void putTextOpacity(NbtCompound nbt, int opacity) {
+            nbt.putByte(TEXT_OPACITY, (byte)opacity);
+        }
+
+        public static void putShouldCastShadow(NbtCompound nbt, boolean shouldCastShadow) {
+            nbt.putBoolean(SHADOW, shouldCastShadow);
+        }
+
+        public static void putIsSeeThrough(NbtCompound nbt, boolean isSeeThrough) {
+            nbt.putBoolean(SEE_THROUGH, isSeeThrough);
+        }
+
+        public static void putShouldUseDefaultBackground(NbtCompound nbt, boolean shouldUseDefaultBackground) {
+            nbt.putBoolean(DEFAULT_BACKGROUND, shouldUseDefaultBackground);
+        }
+
+        public static void putAlignment(NbtCompound nbt, TextDisplayEntity.TextAlignment alignment) {
+            TextDisplayEntity.TextAlignment.CODEC.encodeStart(NbtOps.INSTANCE, alignment).result().ifPresent(element -> nbt.put(ALIGNMENT, element));
+        }
+
+        public static Text getText(NbtCompound nbt) {
+            return nbt.contains(TEXT) ? Text.Serializer.fromJson(nbt.getString(TEXT)) : null;
+        }
+
+        public static Integer getLineWidth(NbtCompound nbt) {
+            return nbt.contains(LINE_WIDTH) ? nbt.getInt(LINE_WIDTH) : null;
+        }
+
+        public static Integer getBackground(NbtCompound nbt) {
+            return nbt.contains(BACKGROUND) ? nbt.getInt(BACKGROUND) : null;
+        }
+
+        public static Byte getTextOpacity(NbtCompound nbt) {
+            return nbt.contains(TEXT_OPACITY) ? nbt.getByte(TEXT_OPACITY) : null;
+        }
+
+        public static Boolean getShouldCastShadow(NbtCompound nbt) {
+            return nbt.contains(SHADOW) ? nbt.getBoolean(SHADOW) : null;
+        }
+
+        public static Boolean getIsSeeThrough(NbtCompound nbt) {
+            return nbt.contains(SEE_THROUGH) ? nbt.getBoolean(SEE_THROUGH) : null;
+        }
+
+        public static Boolean getShouldUseDefaultBackground(NbtCompound nbt) {
+            return nbt.contains(DEFAULT_BACKGROUND) ? nbt.getBoolean(DEFAULT_BACKGROUND) : null;
+        }
+
+        public static TextDisplayEntity.TextAlignment getAlignment(NbtCompound nbt) {
+            return nbt.contains(ALIGNMENT) ? TextDisplayEntity.TextAlignment.valueOf(nbt.getString(ALIGNMENT)) : null;
+        }
+    }
+
     public static NbtList toNbtList(float ... values) {
         NbtList nbtList = new NbtList();
         for (float f : values) {
@@ -197,6 +276,4 @@ public class EntityNbtHelper {
         }
         return nbtList;
     }
-
-
 }

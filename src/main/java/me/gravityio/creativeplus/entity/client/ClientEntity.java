@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -64,7 +65,12 @@ public class ClientEntity implements EntityFrame {
      */
     public static ClientEntity create(Entity readEntity, Entity writeEntity, @NotNull NbtCompound realNbt) {
 
-        if (readEntity instanceof AreaEffectCloudEntity cloud) {
+        if (readEntity instanceof DisplayEntity.TextDisplayEntity display) {
+            return new ClientTextDisplay(display, (DisplayEntity.TextDisplayEntity) writeEntity, realNbt);
+        } else if (readEntity instanceof DisplayEntity display) {
+            return new ClientDisplay(display, (DisplayEntity) writeEntity, realNbt);
+
+        } else if (readEntity instanceof AreaEffectCloudEntity cloud) {
             return new ClientAreaEffectCloud(cloud, (AreaEffectCloudEntity) writeEntity, realNbt);
 
         } else if (readEntity instanceof AbstractMinecartEntity minecart) {

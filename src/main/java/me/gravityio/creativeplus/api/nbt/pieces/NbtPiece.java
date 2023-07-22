@@ -35,7 +35,7 @@ public interface NbtPiece<T> {
     }
 
     static <T> NbtBoundedPiece<T> ofBounded(Supplier<T> getter, Consumer<T> setter, Type type, String name, double min, double max) {
-        return new NbtBoundedPiece<T>() {
+        return new NbtBoundedPiece<>() {
             @Override
             public double getMin() {
                 return min;
@@ -98,7 +98,37 @@ public interface NbtPiece<T> {
         };
     }
 
+    static NbtPiece<Enum<?>> ofEnum(Supplier<Enum<?>> getter, Consumer<Enum<?>> setter, Class<? extends Enum<?>> enumClass, String name) {
+        return new NbtEnumPiece() {
+            @Override
+            public Class<? extends Enum<?>> getEnumClass() {
+                return enumClass;
+            }
+
+            @Override
+            public Enum<?> get() {
+                return getter.get();
+            }
+
+            @Override
+            public void set(Enum<?> anEnum) {
+                setter.accept(anEnum);
+            }
+
+            @Override
+            public Type getType() {
+                return Type.ENUM;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+        };
+    }
+
     enum Type {
-        BOOLEAN, INT, SHORT, FLOAT, DOUBLE, LONG, STRING, UUID, BLOCK_STATE, TEXT
+        BOOLEAN, BYTE, SHORT, INT, FLOAT, DOUBLE, LONG, STRING, UUID,
+        ENUM, TEXT
     }
 }

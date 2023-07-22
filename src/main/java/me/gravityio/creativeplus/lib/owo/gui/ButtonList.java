@@ -1,10 +1,12 @@
-package me.gravityio.creativeplus.gui;
+package me.gravityio.creativeplus.lib.owo.gui;
 
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.core.Size;
 import io.wispforest.owo.ui.parsing.UIModel;
 import io.wispforest.owo.ui.parsing.UIParsing;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -18,16 +20,30 @@ import java.util.function.Function;
  * A Button List that allows for when clicking to just iterate through some options.
  */
 public class ButtonList extends ButtonComponent {
-    private final List<Text> list = new ArrayList<>();
+    protected final List<Text> list = new ArrayList<>();
+    protected int index = 0;
     private Consumer<Integer> onChanged;
-    private int index = 0;
+
     public ButtonList() {
         super(Text.empty(), (v) -> {});
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        this.next();
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!this.clicked(mouseX, mouseY)) {
+            return false;
+        }
+
+        if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
+            this.next();
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_2) {
+            this.back();
+        } else {
+            return false;
+        }
+        this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+        this.onClick(mouseX, mouseY);
+        return true;
     }
 
     public void onChanged(Consumer<Integer> onChanged) {
@@ -39,8 +55,23 @@ public class ButtonList extends ButtonComponent {
     }
 
     public void next() {
-        index++;
-        index %= list.size();
+        this.next(1);
+    }
+
+    public void back() {
+        this.next(-1);
+    }
+
+    protected void next(int increment) {
+        var size = list.size();
+        var temp = (index + increment) % size;
+        temp = temp < 0 ? temp + size : temp;
+
+        this.set(temp);
+    }
+
+    protected void set(int index) {
+        this.index = index;
         super.setMessage(list.get(index));
         super.inflate(Size.zero());
         super.parent().layout(super.parent().fullSize());

@@ -7,31 +7,16 @@
                 <!-- Modal  -->
                 <flow-layout id="modal" direction="horizontal">
                     <children>
-                        <scroll direction="vertical">
-                            <grid-layout rows="100" columns="5" id="entities">
-                                <children>
-                                </children>
-                                <sizing>
-                                    <horizontal method="fill">100</horizontal>
-                                    <vertical method="content">100</vertical>
-                                </sizing>
-                            </grid-layout>
+                        <text-box>
                             <sizing>
                                 <horizontal method="fill">100</horizontal>
                                 <vertical method="fill">100</vertical>
                             </sizing>
-                        </scroll>
+                            <allow-overflow>false</allow-overflow>
+                        </text-box>
                     </children>
-                    <sizing>
-                        <horizontal method="fill">50</horizontal>
-                        <vertical method="fill">80</vertical>
-                    </sizing>
-                    <gap>3</gap>
-                    <padding>
-                        <all>10</all>
-                    </padding>
                     <surface>
-                        <flat>#22000000</flat>
+                        <flat>#333333</flat>
                     </surface>
                 </flow-layout>
             </children>

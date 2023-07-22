@@ -5,16 +5,17 @@ import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.core.*;
+import me.gravityio.creativeplus.CreativePlus;
 import me.gravityio.creativeplus.api.nbt.pieces.NbtBoundedPiece;
+import me.gravityio.creativeplus.api.nbt.pieces.NbtEnumPiece;
 import me.gravityio.creativeplus.api.nbt.pieces.NbtPiece;
 import me.gravityio.creativeplus.entity.client.ClientEntity;
-import me.gravityio.creativeplus.gui.ButtonList;
-import me.gravityio.creativeplus.gui.MutableDiscreteSliderComponent;
-import me.gravityio.creativeplus.gui.NumberFieldComponent;
+import me.gravityio.creativeplus.lib.owo.gui.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -31,12 +32,12 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
     protected final Entity screenEntity;
     protected final ClientEntity clientEntity;
     private final Map<NbtPiece<?>, Component> elements = new HashMap<>();
-    private Mode mode = Mode.EXECUTE;
     private OnFinish onFinish;
     private Text finishButtonText;
 
     public EditEntityScreen(ClientEntity clientEntity) {
-        super(FlowLayout.class, DataSource.file("ui/edit_entity.xml"));
+        super(FlowLayout.class, DataSource.asset(new Identifier(CreativePlus.MOD_ID, "edit_entity")));
+//        super(FlowLayout.class, DataSource.file("ui/edit_entity.xml"));
         this.clientEntity = clientEntity;
         this.screenEntity = this.clientEntity.getWriteEntity();
     }
@@ -62,7 +63,10 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
      */
     @Override
     protected void build(FlowLayout root) {
+        var entityName = root.childById(LabelComponent.class, "entity_name");
         var entityRoot = root.childById(FlowLayout.class, "entity");
+
+        entityName.text(this.screenEntity.getType().getName());
 
         var modeButton = root.childById(ButtonList.class, "mode");
 
@@ -77,15 +81,20 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
         }
         this.create(root);
 
-        var entityComp = Components.entity(Sizing.fill(50), this.screenEntity);
+        var entityComp = new ScrollableEntityComponent<>(Sizing.fill(50), this.screenEntity);
         entityComp.transform(s -> {
             entityComp.showNametag(entityComp.entity().isCustomNameVisible());
         });
         entityComp.sizing(Sizing.fill(80), Sizing.fill(55));
         entityComp.showNametag(this.screenEntity.isCustomNameVisible());
-        entityComp.allowMouseRotation(true);
         entityComp.scaleToFit(true);
+        entityComp.allowMouseRotation(true);
         entityRoot.child(entityComp);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     /**
@@ -109,6 +118,16 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                 checkbox.checkbox.onChanged(boolPiece::set);
                 sectionContentRoot.child(checkbox.root);
                 comp = checkbox.checkbox;
+
+            } else if (type == NbtPiece.Type.BYTE) {
+                var bytePiece = (NbtPiece<Byte>) nbtPiece;
+                var numberInput = getNumberInput(bytePiece.getName(), new NumberFieldComponent.WholeConverter(), -256, 256);
+                numberInput.numberField.onNumberChanged().subscribe(v -> {
+                    if (v == null) return;
+                    setIfNotEqual(v.byteValue(), bytePiece);
+                });
+                inputFlow.child(numberInput.root);
+                comp = numberInput.numberField;
 
             } else if (type == NbtPiece.Type.INT) {
                 if (nbtPiece.isBounded()) {
@@ -206,6 +225,12 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
                 }
 
+            } else if (type == NbtPiece.Type.ENUM) {
+                var enumPiece = (NbtEnumPiece) nbtPiece;
+                var data = getEnumButton(enumPiece.getName(), enumPiece.getEnumClass());
+                data.enumButton.onEnumChanged(enumPiece::set);
+                inputFlow.child(data.root);
+                comp = data.enumButton;
             } else if (type == NbtPiece.Type.TEXT) {
                 if (nbtPiece.isBounded()) {
                     var textPiece = (NbtBoundedPiece<Text>) nbtPiece;
@@ -246,6 +271,11 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                 var boolPiece = (NbtPiece<Boolean>) nbtPiece;
                 var checkbox = (CheckboxComponent) comp;
                 checkbox.checked(boolPiece.get());
+
+            } else if (type == NbtPiece.Type.BYTE) {
+                var bytePiece = (NbtPiece<Byte>) nbtPiece;
+                var numberField = (NumberFieldComponent<Integer>) comp;
+                numberField.value((int) bytePiece.get());
 
             } else if (type == NbtPiece.Type.INT) {
                 if (nbtPiece.isBounded()) {
@@ -317,6 +347,10 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
                 var textbox = (TextBoxComponent) comp;
                 textbox.text(stringPiece.get());
 
+            } else if (type == NbtPiece.Type.ENUM) {
+                var enumPiece = (NbtEnumPiece) nbtPiece;
+                var enumButton = (EnumButtonList) comp;
+                enumButton.setEnum(enumPiece.get());
             } else if (type == NbtPiece.Type.TEXT) {
                 var textPiece = (NbtPiece<Text>) nbtPiece;
                 var textbox = (TextBoxComponent) comp;
@@ -332,6 +366,21 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
             piece.set(v);
     }
 
+    private static EnumButton getEnumButton(String name, Class<? extends Enum<?>> enumClass) {
+        var root = Containers.horizontalFlow(Sizing.fill(100), Sizing.content());
+        root.horizontalAlignment(HorizontalAlignment.CENTER);
+        root.verticalAlignment(VerticalAlignment.CENTER);
+        root.gap(5);
+
+        var label = Components.label(Text.translatable("label." + name));
+        label.tooltip(Text.translatable("tooltip." + name));
+        var enumButton = new EnumButtonList(enumClass);
+
+        root.child(label);
+        root.child(enumButton);
+
+        return new EnumButton(root, label, enumButton);
+    }
     private static <I extends Number> NumberInput<I> getNumberInput(String name, NumberFieldComponent.NumberConverter<I> converter, @Nullable I min, @Nullable I max) {
         var row = getInputLayoutRow();
         var rowFlow = row.root;
@@ -371,7 +420,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
         return new Slider(rowFlow, label, slider);
     }
-
     private static TextBox getTextBox(String name, String def, int maxLength) {
         var row = getInputLayoutRow();
         var rowFlow = row.root;
@@ -392,7 +440,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
         return new TextBox(rowFlow, label, box);
     }
-
     private static Checkbox getCheckbox(String name, boolean def) {
         FlowLayout layout = Containers.horizontalFlow(Sizing.fill(100), Sizing.content());
         layout.gap(3);
@@ -408,7 +455,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
         return new Checkbox(layout, label, checkbox);
     }
-
     private static CheckboxSection getCheckboxSection(String name) {
         var root = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         root.horizontalAlignment(HorizontalAlignment.CENTER);
@@ -431,7 +477,6 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
 
         return new CheckboxSection(root, contentRoot);
     }
-
     private static Row getInputLayoutRow() {
         var flow = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         flow.horizontalAlignment(HorizontalAlignment.CENTER);
@@ -460,4 +505,5 @@ public class EditEntityScreen extends BaseUIModelScreen<FlowLayout> {
     public record Slider(FlowLayout root, LabelComponent label, DiscreteSliderComponent slider) {}
     public record Checkbox(FlowLayout root, LabelComponent label, CheckboxComponent checkbox) {}
     public record TextBox(FlowLayout root, LabelComponent label, TextBoxComponent textBox) {}
+    private record EnumButton(FlowLayout root, LabelComponent label, EnumButtonList enumButton) {}
 }

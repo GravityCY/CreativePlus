@@ -19,6 +19,7 @@ public abstract class CustomHandler implements DefaultInputListener {
     public abstract void transform(NbtCompound nbt);
 
     public abstract boolean isAdditive();
+    public abstract boolean isMerged();
 
     public abstract void onActivated();
 

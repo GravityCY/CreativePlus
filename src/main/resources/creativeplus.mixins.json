@@ -6,12 +6,15 @@
   "mixins": [
   ],
   "client": [
-    "ArmorStandHitbox",
-    "EntityPushMixin",
-    "OverrideGlowingRendering",
-    "OverrideInvisibleArmorStand$HitboxMixin",
-    "OverrideInvisibleArmorStand$VisibilityMixin",
-    "UpdateGlowingMixin"
+    "DisplayEntityMixins$WidthHeightMixin",
+    "ArmorStandMixins$CustomDimensionsMixin",
+    "ArmorStandMixins$HitboxMixin",
+    "ArmorStandMixins$VisibilityMixin",
+    "ClientSideEntityMixins$ClientCollisionMixin",
+    "ClientSideEntityMixins$ClientGlowingMixin",
+    "ClientSideEntityMixins$ClientGlowRenderMixin",
+    "DisplayEntityMixins$BoundingBoxMixin",
+    "DisplayEntityMixins$RenderHitboxMixin"
   ],
   "injectors": {
     "defaultRequire": 1

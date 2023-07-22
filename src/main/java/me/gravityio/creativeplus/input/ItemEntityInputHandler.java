@@ -16,13 +16,13 @@ import net.minecraft.nbt.NbtCompound;
 /**
  * Replaces (kind of) the spawn egg and the armor stand items to use our custom placement handler
  */
-public class ClientItemEntityInputHandler implements DefaultInputListener {
+public class ItemEntityInputHandler implements DefaultInputListener {
 
     private final MinecraftClient client;
     private final ClientEntitySummonHandler summonHandler;
     private ItemStack current = null;
 
-    public ClientItemEntityInputHandler(MinecraftClient client) {
+    public ItemEntityInputHandler(MinecraftClient client) {
         this.client = client;
         this.summonHandler = new ClientEntitySummonHandler(this.client);
         this.summonHandler.setResetOnPlace(false);

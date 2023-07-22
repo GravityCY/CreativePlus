@@ -4,10 +4,11 @@ import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import io.wispforest.owo.ui.parsing.UIParsing;
 import me.gravityio.creativeplus.api.placement.EntityMovementHandler;
 import me.gravityio.creativeplus.commands.PlusCommand;
-import me.gravityio.creativeplus.gui.ButtonList;
+import me.gravityio.creativeplus.lib.owo.gui.ButtonList;
 import me.gravityio.creativeplus.input.CallbackItemInputHandler;
-import me.gravityio.creativeplus.input.ClientItemEntityInputHandler;
-import me.gravityio.creativeplus.input.ClientMoveEntityInputHandler;
+import me.gravityio.creativeplus.input.ItemEntityInputHandler;
+import me.gravityio.creativeplus.input.MoveEntityInputHandler;
+import me.gravityio.creativeplus.input.DisplayEntityInputHandler;
 import me.gravityio.creativeplus.lib.idk.ClientInputListenerRegistry;
 import me.gravityio.creativeplus.lib.idk.ClientServerCommunication;
 import me.gravityio.creativeplus.lib.idk.CreativeEvents;
@@ -78,8 +79,9 @@ public class CreativePlus implements ClientModInitializer, PreLaunchEntrypoint {
     }
 
     private void registerHandlers() {
-        ClientInputListenerRegistry.set("spawn_egg", new ClientItemEntityInputHandler(client));
-        ClientInputListenerRegistry.set("move_entity", new ClientMoveEntityInputHandler(client));
+        ClientInputListenerRegistry.set("spawn_egg", new ItemEntityInputHandler(client));
+        ClientInputListenerRegistry.set("move_entity", new MoveEntityInputHandler(client));
+        ClientInputListenerRegistry.set("display_helper", new DisplayEntityInputHandler(client));
     }
 
     private void registerCommands() {

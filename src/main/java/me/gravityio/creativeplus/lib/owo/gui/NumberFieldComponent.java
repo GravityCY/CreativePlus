@@ -1,4 +1,4 @@
-package me.gravityio.creativeplus.gui;
+package me.gravityio.creativeplus.lib.owo.gui;
 
 import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.core.Sizing;

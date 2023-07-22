@@ -31,6 +31,7 @@
                                                 <vertical method="fill">50</vertical>
                                             </sizing>
                                             <vertical-alignment>top</vertical-alignment>
+                                            <max-length>128</max-length>
                                         </text-box>
                                     </children>
                                     <horizontal-alignment>center</horizontal-alignment>

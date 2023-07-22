@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class ClientEditInputHandler {
+public class BindEditHelper {
 
     private static final String commandFormat = "data merge entity %s %s";
 

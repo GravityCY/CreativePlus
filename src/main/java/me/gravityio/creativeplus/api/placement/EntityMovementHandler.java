@@ -1,6 +1,7 @@
 package me.gravityio.creativeplus.api.placement;
 
 import me.gravityio.creativeplus.lib.helper.AngleHelper;
+import me.gravityio.creativeplus.lib.helper.EntityHelper;
 import me.gravityio.creativeplus.lib.helper.Helper;
 import me.gravityio.creativeplus.lib.helper.VecHelper;
 import me.gravityio.creativeplus.lib.idk.ClientInputListener;
@@ -9,6 +10,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -29,12 +31,12 @@ public class EntityMovementHandler implements ClientInputListener {
     // The amount to nudge for every key event
     protected static final double NUDGE = 0.01d;
     // Minimum distance to offset entity relative to player
-    protected static final double MIN_DISTANCE = 1.5;
 
     protected Entity entity;
     protected final MinecraftClient client;
-    protected float entityHeight;
-    protected Vec3d posOffset = OFFSET.add(Vec3d.ZERO);
+    protected Vec3d localPosOffset = new Vec3d(OFFSET.x, OFFSET.y, OFFSET.z);
+    protected Vec3d globalPosOffset = new Vec3d(0, 0, 0);
+    protected float minDistance = 1.5f;
     protected float defaultYaw = 0;
     protected float yawOffset = 0;
     protected boolean locked = false;
@@ -94,9 +96,12 @@ public class EntityMovementHandler implements ClientInputListener {
                 }
                 this.entity.setPosition(VecHelper.toAbsolutePos(this.entity.getPos(), new Vec2f(pitch, yaw), new Vec3d(0, 0, vertical * SCROLL_MOD_POS)));
             } else {
-                Vec3d newOffset = posOffset.add(0, 0, vertical * SCROLL_MOD_POS);
-                if (newOffset.z >= MIN_DISTANCE)
-                    posOffset = newOffset;
+                Vec3d newOffset = this.localPosOffset.add(0, 0, vertical * SCROLL_MOD_POS);
+                if (newOffset.z >= this.minDistance) {
+                    this.localPosOffset = newOffset;
+                } else {
+                    this.localPosOffset = new Vec3d(newOffset.x, newOffset.y, this.minDistance);
+                }
             }
         }
 
@@ -156,8 +161,11 @@ public class EntityMovementHandler implements ClientInputListener {
     public void setEntity(@Nullable Entity entity) {
         this.entity = entity;
         if (this.entity == null) return;
-        this.entityHeight = this.entity.getDimensions(this.entity.getPose()).height;
+        var size = EntityHelper.getSize(this.entity);
+        var entityHeight = this.entity.getHeight();
         this.defaultYaw = this.entity.getYaw();
+        this.globalPosOffset = new Vec3d(0, -(entityHeight / 2), 0);
+        this.localPosOffset = new Vec3d(0, 0, Math.max(size / 1.5f, 2));
         if (!this.locked) {
             this.alignEntityToPlayer();
         }
@@ -165,11 +173,10 @@ public class EntityMovementHandler implements ClientInputListener {
 
     public void reset() {
         this.entity = null;
-        this.entityHeight = 0;
         this.yawOffset = 0;
         this.locked = false;
         this.active = false;
-        this.posOffset = OFFSET.add(Vec3d.ZERO);
+        this.localPosOffset = OFFSET.add(Vec3d.ZERO);
     }
 
     /**
@@ -190,7 +197,7 @@ public class EntityMovementHandler implements ClientInputListener {
                 float yaw = AngleHelper.rotateAngle(AngleHelper.snapHorizontalCardinals(rot.y), 90);
                 this.entity.setPosition(VecHelper.toAbsolutePos(this.entity.getPos(), new Vec2f(0, yaw), new Vec3d(0, 0, nudge)));
             } else {
-                posOffset = posOffset.add(nudge, 0, 0);
+                localPosOffset = localPosOffset.add(nudge, 0, 0);
             }
         }
 
@@ -199,7 +206,7 @@ public class EntityMovementHandler implements ClientInputListener {
                 float yaw = AngleHelper.rotateAngle(AngleHelper.snapHorizontalCardinals(rot.y), -90);
                 this.entity.setPosition(VecHelper.toAbsolutePos(this.entity.getPos(), new Vec2f(0, yaw), new Vec3d(0, 0, nudge)));
             } else {
-                posOffset = posOffset.add(-nudge, 0, 0);
+                localPosOffset = localPosOffset.add(-nudge, 0, 0);
             }
         }
 
@@ -212,7 +219,7 @@ public class EntityMovementHandler implements ClientInputListener {
                     this.entity.setPosition(VecHelper.toAbsolutePos(this.entity.getPos(), new Vec2f(0, yaw), new Vec3d(0, 0, nudge)));
                 }
             } else {
-                posOffset = posOffset.add(0, nudge, 0);
+                localPosOffset = localPosOffset.add(0, nudge, 0);
             }
         }
 
@@ -225,7 +232,7 @@ public class EntityMovementHandler implements ClientInputListener {
                     this.entity.setPosition(VecHelper.toAbsolutePos(this.entity.getPos(), new Vec2f(0, yaw), new Vec3d(0, 0, nudge)));
                 }
             } else {
-                posOffset = posOffset.add(0, -nudge, 0);
+                localPosOffset = localPosOffset.add(0, -nudge, 0);
             }
         }
     }
@@ -268,7 +275,7 @@ public class EntityMovementHandler implements ClientInputListener {
         if (this.entity == null || this.locked) return;
         Vec3d p = this.client.player.getEyePos();
         Vec2f r = this.client.player.getRotationClient();
-        Vec3d np = VecHelper.toAbsolutePos(p, r, posOffset).add(0, -(entityHeight / 2), 0);
+        Vec3d np = VecHelper.toAbsolutePos(p, r, this.localPosOffset).add(this.globalPosOffset);
         this.entity.setPosition(np);
     }
 

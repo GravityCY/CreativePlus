@@ -2,15 +2,19 @@ package me.gravityio.creativeplus.api.placement;
 
 import me.gravityio.creativeplus.api.custom.ArmorStandHandler;
 import me.gravityio.creativeplus.api.custom.CustomHandler;
+import me.gravityio.creativeplus.api.custom.DisplayEntityHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -91,17 +95,14 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
         if (this.client.getWindow().getHandle() != window) return ActionResult.PASS;
         if (this.entity == null || this.client.currentScreen != null) return ActionResult.PASS;
 
-        ActionResult handlerResult = null;
         if (this.handlerActive) {
             var result = this.handler.onMouseScroll(window, horizontal, vertical);
             if (!this.handler.isAdditive())
                 return result;
-            handlerResult = result;
+            if (result == ActionResult.FAIL) return ActionResult.FAIL;
         }
 
-        var superResult = super.onMouseScroll(window, horizontal, vertical);
-        if ((handlerResult == ActionResult.FAIL) || superResult == ActionResult.FAIL) return ActionResult.FAIL;
-        return ActionResult.PASS;
+        return super.onMouseScroll(window, horizontal, vertical);
     }
 
     @Override
@@ -111,16 +112,15 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
         if (this.client.getWindow().getHandle() != window) return ActionResult.PASS;
         if (this.entity == null || this.client.currentScreen != null) return ActionResult.PASS;
 
-        ActionResult handlerResult = null;
         if (this.handlerActive) {
             var result = this.handler.onKey(window, key, scancode, action, mods);
             if (!this.handler.isAdditive())
                 return result;
-            handlerResult = result;
+            if (result == ActionResult.FAIL) return ActionResult.FAIL;
         }
 
         var superResult = super.onKey(window, key, scancode, action, mods);
-        if (superResult == ActionResult.FAIL || handlerResult == ActionResult.FAIL) return ActionResult.FAIL;
+        if (superResult == ActionResult.FAIL) return ActionResult.FAIL;
 
         if (action != GLFW.GLFW_PRESS) return ActionResult.PASS;
 
@@ -128,9 +128,11 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
             this.cancel();
         } else if (key == GLFW.GLFW_KEY_B) {
             if (this.handler != null) {
-                this.setHandlerActive(true);
-                this.beforeHandler = super.entity.writeNbt(new NbtCompound());
-                this.handler.onActivated();
+                if (!this.handlerActive) {
+                    this.setHandlerActive(true);
+                    this.beforeHandler = super.entity.writeNbt(new NbtCompound());
+                    this.handler.onActivated();
+                }
             } else {
                 this.client.player.sendMessage(Text.translatable("message.creativeplus.movement.no_custom_handler"), true);
             }
@@ -141,6 +143,34 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
         }
 
         return ActionResult.FAIL;
+    }
+
+    public void setupEntity(@NotNull Entity entity) {
+        this.original = entity;
+        Entity clone = entity.getType().create(entity.world);
+        if (clone == null) return;
+        this.setupClientEntity(clone, entity.writeNbt(new NbtCompound()));
+        this.output = new NbtCompound();
+    }
+
+    /**
+     * Creates a clone of the given entity, given nbt and sets the clone to be operated on <br><br>
+     * The NBT must be formatted for sending to the server, attempt to not exceed 256 characters!
+     */
+    public void setupEntity(EntityType<?> type, NbtCompound nbt) {
+        var clone = type.create(client.world);
+        if (clone == null) return;
+        this.setupClientEntity(clone, nbt);
+        this.output = nbt;
+    }
+
+    public void setupClientEntity(Entity clone, NbtCompound nbt) {
+        clone.readNbt(nbt);
+        clone.setInvisible(false);
+        clone.setUuid(UUID.randomUUID());
+        clone.setId(-1);
+        updateCustomHandler(this.client, clone);
+        super.setEntity(clone);
     }
 
     /**
@@ -222,6 +252,10 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
         this.active = v;
     }
 
+    public OutputData getOutputData() {
+        return new OutputData(super.entity.getPos(), super.entity.getRotationClient(), this.output);
+    }
+
     public void setResetOnPlace(boolean v) {
         this.resetOnPlace = v;
     }
@@ -242,34 +276,6 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
         return this.active;
     }
 
-    public void setupEntity(Entity entity) {
-        this.original = entity;
-        Entity clone = entity.getType().create(entity.world);
-        if (clone == null) return;
-        this.setupClientEntity(clone, entity.writeNbt(new NbtCompound()));
-        this.output = new NbtCompound();
-    }
-
-    /**
-     * Creates a clone of the given entity, given nbt and sets the clone to be operated on <br><br>
-     * The NBT must be formatted for sending to the server, attempt to not exceed 256 characters!
-     */
-    public void setupEntity(EntityType<?> type, NbtCompound nbt) {
-        var clone = type.create(client.world);
-        if (clone == null) return;
-        this.setupClientEntity(clone, nbt);
-        this.output = nbt;
-    }
-
-    public void setupClientEntity(Entity clone, NbtCompound nbt) {
-        clone.readNbt(nbt);
-        clone.setInvisible(false);
-        clone.setUuid(UUID.randomUUID());
-        clone.setId(-1);
-        this.handler = getUpdatedCustomHandler(this.client, clone);
-        super.setEntity(clone);
-    }
-
     public void onPlaceCallback(@Nullable OnPlace onPlace) {
         this.onPlace = onPlace;
     }
@@ -284,44 +290,44 @@ public class ClientEntityMovementHandler extends EntityMovementHandler {
 
     private void setHandlerActive(boolean v) {
         this.handlerActive = v;
-        super.active = !this.handlerActive;
+        super.active = !v || this.handler.isAdditive();
     }
 
     private void resetLocal(StopReason reason) {
-        if (reason == StopReason.CANCEL && !resetOnCancel) {
+        if (reason == StopReason.CANCEL && !this.resetOnCancel) {
             return;
-        } else if (reason == StopReason.PLACE && !resetOnPlace) {
+        } else if (reason == StopReason.PLACE && !this.resetOnPlace) {
             return;
         }
 
         this.reset();
     }
 
-    private CustomHandler getUpdatedCustomHandler(MinecraftClient client, Entity entity) {
-        var handler = getCustomHandler(client, entity);
-        if (handler != null) {
-            handler.onComplete(() -> {
-                this.setHandlerActive(false);
-                handler.transform(this.output);
+    private void updateCustomHandler(MinecraftClient client, Entity entity) {
+        this.handler = getCustomHandler(client, entity);
+        if (this.handler != null) {
+            this.handler.onComplete(() -> {
+                if (!this.handler.isMerged())
+                    this.setHandlerActive(false);
+                this.handler.transform(this.output);
 
             });
 
-            handler.onCancel(() -> {
-                this.setHandlerActive(false);
+            this.handler.onCancel(() -> {
+                if (!this.handler.isMerged())
+                    this.setHandlerActive(false);
                 super.entity.readNbt(this.beforeHandler);
             });
 
+            this.setHandlerActive(this.handler.isMerged());
         }
-        return handler;
-    }
-
-    private OutputData getOutputData() {
-        return new OutputData(super.entity.getPos(), super.entity.getRotationClient(), this.output);
     }
 
     private static CustomHandler getCustomHandler(MinecraftClient client, Entity entity) {
-        if (entity instanceof ArmorStandEntity) {
-            return new ArmorStandHandler(client, entity);
+        if (entity instanceof ArmorStandEntity stand) {
+            return new ArmorStandHandler(client, stand);
+        } else if (entity instanceof DisplayEntity display) {
+            return new DisplayEntityHandler(client, display);
         }
         return null;
     }

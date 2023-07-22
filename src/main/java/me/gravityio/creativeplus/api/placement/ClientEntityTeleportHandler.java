@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
@@ -46,7 +47,7 @@ public class ClientEntityTeleportHandler extends ClientEntityMovementHandler {
     }
 
     @Override
-    public void setupEntity(Entity entity) {
+    public void setupEntity(@NotNull Entity entity) {
         this.uuid = entity.getUuid();
         this.name = TextHelper.getLimit(entity.getName(), 20);
         super.setupEntity(entity);
